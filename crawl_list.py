@@ -56,7 +56,7 @@ class Crawl(object):
         ts = []
         if len(elements) == 0:
             # print('no Room-item!: %s' % self.my_id)
-            print('released list: %s' % self.my_id)
+            print('released [list]: %s' % self.my_id)
             b.quit()
             return
         for el in elements:
@@ -67,8 +67,14 @@ class Crawl(object):
             t = pool.submit2(c.crawl, href)
             ts.append(t)
 
-        for t in concurrent.futures.as_completed(ts):
-            t.result(timeout=2)
+        for t in ts:
+            try:
+                t.result(timeout=60 * 1)
+            except concurrent.futures.TimeoutError:
+                t.cancel()
+                print('cancedled [list]: %s' % self.my_id)
+                b.quit()
+                return
 
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')

@@ -36,8 +36,14 @@ def main():
 
             count += 1
 
-    for t in concurrent.futures.as_completed(ts):
-        t.result(timeout=2)
+    # for t in concurrent.futures.as_completed(ts, timeout=2):
+    for t in ts:
+        try:
+            t.result(timeout=60 * 3)
+        except concurrent.futures.TimeoutError:
+            t.cancel()
+            print('canceled lat, lng')
+
     print('done')
 
     # main3()
