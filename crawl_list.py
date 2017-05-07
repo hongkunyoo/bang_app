@@ -37,7 +37,7 @@ class Crawl(object):
         url = 'https://www.dabangapp.com/search#/map?id=&type=search&filters={"deposit-range":[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s, %s],"zoom":16}&cluster={}' % (lat, lng)
         self.url = url
         self.b = my_driver.get_driver(platform.system())
-        self.run()
+        return self.run()
 
     def run(self):
         url = self.url
@@ -47,18 +47,18 @@ class Crawl(object):
 
         b.get(url)
         print('[list] Start: %s' % self.my_id)
-        self.find_list(b)
+        return self.find_list(b, [])
 
-    def find_list(self, b):
+    def find_list(self, b, ts):
         time.sleep(10)
         elements = b.find_elements_by_class_name("Room-item")
         pool = my_threading.MyThreadPool.instance()
-        ts = []
+        # ts = []
         if len(elements) == 0:
             # print('no Room-item!: %s' % self.my_id)
             print('[list] Released: %s' % self.my_id)
             b.quit()
-            return
+            return ts
         for el in elements:
             a_tag = el.find_element_by_tag_name("a")
             href = a_tag.get_attribute('href')
@@ -81,15 +81,15 @@ class Crawl(object):
         except selenium.common.exceptions.NoSuchElementException:
             print('[list] Released: %s' % self.my_id)
             b.quit()
-            return
+            return ts
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
             print('[list] Released: %s' % self.my_id)
             b.quit()
-            return
+            return ts
         except selenium.common.exceptions.NoSuchElementException:
             next_btn.click()
-            self.find_list(b)
+            return self.find_list(b, ts)
 
 

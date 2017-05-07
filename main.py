@@ -5,6 +5,8 @@ import storage
 import my_threading
 import concurrent
 import my_driver
+import platform
+import threading
 
 
 # (높이, 가로)
@@ -17,7 +19,7 @@ import my_driver
 def main():
     count = 0
 
-    cal = 3
+    cal = 2
     step = int(100/cal)
     lngs = get_lngs(step)
     pool = my_threading.MyThreadPool.instance()
@@ -39,7 +41,9 @@ def main():
     # for t in concurrent.futures.as_completed(ts, timeout=2):
     for t in ts:
         try:
-            t.result(timeout=60 * 8)
+            tts = t.result(timeout=60 * 8)
+            for tt in tts:
+                tt.result(timeout=60 * 5)
         except concurrent.futures.TimeoutError:
             t.cancel()
             print('[list] Cancelled: %s' % c.my_id)
