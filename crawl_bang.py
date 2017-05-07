@@ -96,6 +96,6 @@ class Crawler(object):
             res = store.insert(bang)
 
         # print('[%s] %s' % ("duplicated" if res is None else "success", url))
-        print('released bang: %s' % self.my_id)
+        print('released [bang]: %s' % self.my_id)
         b.quit()
         return

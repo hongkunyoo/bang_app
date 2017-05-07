@@ -55,7 +55,7 @@ class Crawl(object):
         pool = my_threading.MyThreadPool.instance()
         ts = []
         if len(elements) == 0:
-            print('no Room-item!: %s' % self.my_id)
+            # print('no Room-item!: %s' % self.my_id)
             print('released list: %s' % self.my_id)
             b.quit()
             return
@@ -68,18 +68,18 @@ class Crawl(object):
             ts.append(t)
 
         for t in concurrent.futures.as_completed(ts):
-            t.result()
+            t.result(timeout=2)
 
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
         except selenium.common.exceptions.NoSuchElementException:
-            print('released list: %s' % self.my_id)
+            print('released [list]: %s' % self.my_id)
             b.quit()
             return
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
-            print('released list: %s' % self.my_id)
+            print('released [list]: %s' % self.my_id)
             b.quit()
             return
         except selenium.common.exceptions.NoSuchElementException:

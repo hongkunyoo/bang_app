@@ -17,7 +17,7 @@ import my_driver
 def main():
     count = 0
 
-    cal = 10
+    cal = 3
     step = int(100/cal)
     lngs = get_lngs(step)
     pool = my_threading.MyThreadPool.instance()
@@ -37,13 +37,10 @@ def main():
             count += 1
 
     for t in concurrent.futures.as_completed(ts):
-        t.result()
+        t.result(timeout=2)
+    print('done')
 
-    with open('plz.txt', 'w') as f:
-        print('total: ', pool.count, file=f)
-        print('insert: ', pool.insert_count, file=f)
-
-    main3()
+    # main3()
 
 # 37
 def get_lngs(step=1):

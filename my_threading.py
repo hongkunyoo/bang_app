@@ -22,6 +22,7 @@ class MyThreadPool(SingletonMixin):
         self.submit_count2 = 0
         self.count = 0
         self.insert_count = 0
+
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         self.executor2 = concurrent.futures.ThreadPoolExecutor(max_workers=20)
         print('<<<<my Thread instatiate!>>>>')
