@@ -27,15 +27,15 @@ class MyThreadPool(SingletonMixin):
         print('<<<<my Thread instatiate!>>>>')
 
     def submit(self, func, *args):
-        print('in submit1: %s' % self.submit_count1)
-        print('active1: %s' % threading.activeCount())
+        # print('in submit1: %s' % self.submit_count1)
+        # print('active1: %s' % threading.activeCount())
         self.submit_count1 += 1
 
         return self.executor.submit(func, *args)
 
     def submit2(self, func, *args):
-        print('in submit2: %s' % self.submit_count2)
-        print('active2: %s' % threading.activeCount())
+        # print('in submit2: %s' % self.submit_count2)
+        # print('active2: %s' % threading.activeCount())
         self.submit_count2 += 1
 
         return self.executor2.submit(func, *args)

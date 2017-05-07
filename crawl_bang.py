@@ -95,7 +95,7 @@ class Crawler(object):
             store = storage.Storage()
             res = store.insert(bang)
 
-        print('[%s] %s' % ("duplicated" if res is None else "success", url))
+        # print('[%s] %s' % ("duplicated" if res is None else "success", url))
         print('released bang: %s' % self.my_id)
         b.quit()
         return

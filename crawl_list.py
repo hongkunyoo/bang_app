@@ -55,7 +55,7 @@ class Crawl(object):
         pool = my_threading.MyThreadPool.instance()
         ts = []
         if len(elements) == 0:
-            print('no Room-item!: %s' % self.url)
+            print('no Room-item!: %s' % self.my_id)
             print('released list: %s' % self.my_id)
             b.quit()
             return
