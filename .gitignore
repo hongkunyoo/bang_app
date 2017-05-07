@@ -3,3 +3,4 @@ ghostdriver.log
 *.pyc
 phantomjs-windows/*
 phantomjs-linux/*
+chromedriver.exe

@@ -10,11 +10,12 @@ import re
 import json
 import pprint
 import storage
+import my_threading
+import my_driver
+import urllib
 
-PATH_LIST = {
-    "Windows": 'phantomjs-windows/bin/phantomjs.exe',
-    "Linux": 'phantomjs-linux/bin/phantomjs'
-}
+
+
 by_mapper = {
     "class": By.CLASS_NAME,
     "tag": By.TAG_NAME,
@@ -24,17 +25,16 @@ by_mapper = {
 }
 
 
-class Crawler(threading.Thread):
+class Crawler(object):
 
     def __init__(self):
-        threading.Thread.__init__(self)
-        PHANTOM_PATH = PATH_LIST[platform.system()]
-        self.b = webdriver.PhantomJS(PHANTOM_PATH)
-        self.b.implicitly_wait(10)
+        pass
+        # threading.Thread.__init__(self)
 
     def crawl(self, url):
         self.url = url
-        self.start()
+        self.b = my_driver.get_driver(platform.system())
+        self.run()
 
     def run(self):
         rand = random.randint(2, 10)
@@ -56,6 +56,9 @@ class Crawler(threading.Thread):
                     return ""
                 time.sleep(1)
                 return find_until(until-1, _script)
+            except urllib.error.URLError:
+                time.sleep(5)
+                return find_until(until - 1, _script)
 
         for script in scripts:
             innerHTML = find_until(3, script)
@@ -84,5 +87,10 @@ class Crawler(threading.Thread):
             bang['PartitionKey'] = str(bang['id'])
             bang['RowKey'] = str(bang['seq'])
 
+            # pool = my_threading.MyThreadPool.instance()
+            # pool.incr_count()
             store = storage.Storage()
-            store.insert(bang)
+            res = store.insert(bang)
+            b.quit()
+            print('[%s] %s' % ("duplicated" if res is None else "success", url))
+
