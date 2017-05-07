@@ -1,0 +1,5 @@
+.idea/*
+ghostdriver.log
+*.pyc
+phantomjs-windows/*
+phantomjs-linux/*
