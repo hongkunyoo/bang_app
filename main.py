@@ -39,10 +39,10 @@ def main():
     # for t in concurrent.futures.as_completed(ts, timeout=2):
     for t in ts:
         try:
-            t.result(timeout=60 * 5)
+            t.result(timeout=60 * 8)
         except concurrent.futures.TimeoutError:
             t.cancel()
-            print('[lat,lng] Cancelled')
+            print('[list] Cancelled: %s' % c.my_id)
 
     print('done')
 

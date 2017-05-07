@@ -69,10 +69,10 @@ class Crawl(object):
 
         for t in ts:
             try:
-                t.result(timeout=60 * 3)
+                t.result(timeout=60 * 5)
             except concurrent.futures.TimeoutError:
                 t.cancel()
-                print('[list] Cancelled: %s' % self.my_id)
+                print('[bang] Cancelled: %s' % c.my_id)
                 b.quit()
                 return
 
