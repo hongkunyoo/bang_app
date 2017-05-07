@@ -46,7 +46,7 @@ class Crawl(object):
         time.sleep(rand)
 
         b.get(url)
-        print('crawl [list]: %s' % self.my_id)
+        print('[list] Start: %s' % self.my_id)
         self.find_list(b)
 
     def find_list(self, b):
@@ -56,7 +56,7 @@ class Crawl(object):
         ts = []
         if len(elements) == 0:
             # print('no Room-item!: %s' % self.my_id)
-            print('released [list]: %s' % self.my_id)
+            print('[list] Released: %s' % self.my_id)
             b.quit()
             return
         for el in elements:
@@ -69,23 +69,23 @@ class Crawl(object):
 
         for t in ts:
             try:
-                t.result(timeout=60 * 1)
+                t.result(timeout=60 * 3)
             except concurrent.futures.TimeoutError:
                 t.cancel()
-                print('cancedled [list]: %s' % self.my_id)
+                print('[list] Cancelled: %s' % self.my_id)
                 b.quit()
                 return
 
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
         except selenium.common.exceptions.NoSuchElementException:
-            print('released [list]: %s' % self.my_id)
+            print('[list] Released: %s' % self.my_id)
             b.quit()
             return
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
-            print('released [list]: %s' % self.my_id)
+            print('[list] Released: %s' % self.my_id)
             b.quit()
             return
         except selenium.common.exceptions.NoSuchElementException:

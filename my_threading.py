@@ -25,7 +25,6 @@ class MyThreadPool(SingletonMixin):
 
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         self.executor2 = concurrent.futures.ThreadPoolExecutor(max_workers=20)
-        print('<<<<my Thread instatiate!>>>>')
 
     def submit(self, func, *args):
         # print('in submit1: %s' % self.submit_count1)

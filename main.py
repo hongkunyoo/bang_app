@@ -42,11 +42,12 @@ def main():
             t.result(timeout=60 * 3)
         except concurrent.futures.TimeoutError:
             t.cancel()
-            print('canceled lat, lng')
+            print('[lat,lng] Cancelled')
 
     print('done')
 
     # main3()
+
 
 # 37
 def get_lngs(step=1):

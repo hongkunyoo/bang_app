@@ -44,7 +44,7 @@ class Crawler(object):
         url = self.url
         b = self.b
         b.get(url)
-        print('crawl [bang]: %s' % self.my_id)
+        print('[bang] Start: %s' % self.my_id)
 
         time.sleep(3)
         scripts = b.find_elements_by_tag_name('script')
@@ -96,6 +96,6 @@ class Crawler(object):
             res = store.insert(bang)
 
         # print('[%s] %s' % ("duplicated" if res is None else "success", url))
-        print('released [bang]: %s' % self.my_id)
+        print('[bang] Released: %s' % self.my_id)
         b.quit()
         return
