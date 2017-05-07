@@ -30,6 +30,8 @@ class Crawler(object):
     def __init__(self):
         pass
         # threading.Thread.__init__(self)
+        pool = my_threading.MyThreadPool.instance()
+        self.my_id = pool.get_id()
 
     def crawl(self, url):
         self.url = url
@@ -40,12 +42,12 @@ class Crawler(object):
         rand = random.randint(2, 10)
         time.sleep(rand)
         url = self.url
-        print('crawl: %s' % url)
         b = self.b
-
         b.get(url)
+        print('crawl [bang]: %s' % self.my_id)
+
+        time.sleep(3)
         scripts = b.find_elements_by_tag_name('script')
-        time.sleep(2)
 
         def find_until(until, _script):
             if until <= 0:
@@ -61,7 +63,7 @@ class Crawler(object):
             try:
                 innerHTML = find_until(3, script)
             except:
-                print(self.url)
+                # print(self.url)
                 continue
 
             if "dabang.web.detail" not in innerHTML:
@@ -93,6 +95,7 @@ class Crawler(object):
             store = storage.Storage()
             res = store.insert(bang)
 
-        b.quit()
         print('[%s] %s' % ("duplicated" if res is None else "success", url))
-        print('released bang: %s' % threading.activeCount())
+        print('released bang: %s' % self.my_id)
+        b.quit()
+        return

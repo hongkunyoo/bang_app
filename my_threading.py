@@ -17,6 +17,7 @@ class SingletonMixin(object):
 class MyThreadPool(SingletonMixin):
 
     def __init__(self):
+        self.id = 0
         self.submit_count1 = 0
         self.submit_count2 = 0
         self.count = 0
@@ -44,3 +45,7 @@ class MyThreadPool(SingletonMixin):
 
     def incr_insert_count(self):
         self.insert_count += 1
+
+    def get_id(self):
+        self.id += 1
+        return self.id

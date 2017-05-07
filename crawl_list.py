@@ -25,7 +25,8 @@ class Crawl(object):
 
     def __init__(self, count):
         # threading.Thread.__init__(self)
-        pass
+        pool = my_threading.MyThreadPool.instance()
+        self.my_id = pool.get_id()
 
 
     def crawl(self, lng, lat):
@@ -43,20 +44,21 @@ class Crawl(object):
         b = self.b
         rand = random.randint(2, 10)
         time.sleep(rand)
-        print('crawl list!: %s' % url)
+
         b.get(url)
-        time.sleep(10)
-        # b.save_screenshot('plz.png')
+        print('crawl [list]: %s' % self.my_id)
         self.find_list(b)
 
     def find_list(self, b):
-        print('Start finding list')
+        time.sleep(10)
         elements = b.find_elements_by_class_name("Room-item")
         pool = my_threading.MyThreadPool.instance()
         ts = []
         if len(elements) == 0:
             print('no Room-item!: %s' % self.url)
-            b.save_screenshot('png/%s%s.png' % (self.lat, self.lng))
+            print('released list: %s' % self.my_id)
+            b.quit()
+            return
         for el in elements:
             a_tag = el.find_element_by_tag_name("a")
             href = a_tag.get_attribute('href')
@@ -71,18 +73,17 @@ class Crawl(object):
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
         except selenium.common.exceptions.NoSuchElementException:
+            print('released list: %s' % self.my_id)
             b.quit()
-            print('released list: %s' % threading.activeCount())
             return
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
+            print('released list: %s' % self.my_id)
             b.quit()
-            print('released list: %s' % threading.activeCount())
             return
         except selenium.common.exceptions.NoSuchElementException:
             next_btn.click()
-            time.sleep(10)
             self.find_list(b)
 
 
