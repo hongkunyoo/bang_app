@@ -17,7 +17,8 @@ class SingletonMixin(object):
 class MyThreadPool(SingletonMixin):
 
     def __init__(self):
-        self.submit_count = 0
+        self.submit_count1 = 0
+        self.submit_count2 = 0
         self.count = 0
         self.insert_count = 0
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
@@ -25,14 +26,16 @@ class MyThreadPool(SingletonMixin):
         print('<<<<my Thread instatiate!>>>>')
 
     def submit(self, func, *args):
-        # print('in submit: %s' % self.count)
-        # print('active: %s' % threading.activeCount())
-        self.submit_count += 1
+        print('in submit1: %s' % self.submit_count1)
+        print('active1: %s' % threading.activeCount())
+        self.submit_count1 += 1
 
         return self.executor.submit(func, *args)
 
     def submit2(self, func, *args):
-        self.submit_count += 1
+        print('in submit2: %s' % self.submit_count2)
+        print('active2: %s' % threading.activeCount())
+        self.submit_count2 += 1
 
         return self.executor2.submit(func, *args)
 

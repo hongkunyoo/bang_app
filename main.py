@@ -4,6 +4,7 @@ import re
 import storage
 import my_threading
 import concurrent
+import my_driver
 
 
 # (높이, 가로)
@@ -100,5 +101,36 @@ def main3():
     #     print('total: ', count, file=f)
         # print('insert: ', pool.insert_count, file=f)
 
+import platform
+import threading
+
+def main4():
+
+    lat = 126.97
+    lng = 37.3
+
+    url = 'https://www.dabangapp.com/search#/map?id=&type=search&filters={"deposit-range":' \
+          '[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s, %s],"zoom":16}&cluster={}' % (lat, lng)
+    ts = []
+
+    def target():
+        print('>>>start thread!')
+        driver = my_driver.get_driver(platform.system())
+        driver.get(url)
+        els = driver.find_elements_by_class_name("Room-item")
+        for el in els:
+            print(el)
+        driver.quit()
+        print('end thread<<<')
+
+    for i in range(30):
+        t = threading.Thread(target=target)
+        t.start()
+        ts.append(t)
+    print('---------------')
+    for t in ts:
+        t.join()
+
+    print('done')
 
 main()

@@ -4,3 +4,4 @@ ghostdriver.log
 phantomjs-windows/*
 phantomjs-linux/*
 chromedriver.exe
+png/*

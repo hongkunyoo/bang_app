@@ -17,6 +17,6 @@ def get_driver(os_system):
     path = PATH_LIST[os_system]
     driver = webdriver.PhantomJS(path, desired_capabilities=dcap)
     # driver = webdriver.Chrome('chromedriver.exe')
-    driver.set_window_size(1120, 550)
+    driver.set_window_size(1920, 950)
     driver.implicitly_wait(10)
     return driver
