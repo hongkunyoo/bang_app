@@ -48,20 +48,21 @@ class Crawler(object):
         time.sleep(2)
 
         def find_until(until, _script):
+            if until <= 0:
+                return ""
+            time.sleep(3)
             try:
                 innerHTML = _script.get_attribute('innerHTML')
                 return innerHTML
-            except StaleElementReferenceException as e:
-                if until <= 0:
-                    return ""
-                time.sleep(1)
+            except Exception:
                 return find_until(until-1, _script)
-            except urllib.error.URLError:
-                time.sleep(5)
-                return find_until(until - 1, _script)
 
         for script in scripts:
-            innerHTML = find_until(3, script)
+            try:
+                innerHTML = find_until(3, script)
+            except:
+                print(self.url)
+                continue
 
             if "dabang.web.detail" not in innerHTML:
                 continue
@@ -91,6 +92,7 @@ class Crawler(object):
             # pool.incr_count()
             store = storage.Storage()
             res = store.insert(bang)
-            b.quit()
-            print('[%s] %s' % ("duplicated" if res is None else "success", url))
-            print('released bang: %s' % threading.activeCount())
+            
+        b.quit()
+        print('[%s] %s' % ("duplicated" if res is None else "success", url))
+        print('released bang: %s' % threading.activeCount())
