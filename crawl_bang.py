@@ -59,6 +59,7 @@ class Crawler(object):
             except Exception:
                 return find_until(until-1, _script)
 
+        res = None
         for script in scripts:
             try:
                 innerHTML = find_until(3, script)
@@ -96,6 +97,6 @@ class Crawler(object):
             res = store.insert(bang)
 
         # print('[%s] %s' % ("duplicated" if res is None else "success", url))
-        print('[bang] Released: %s' % self.my_id)
+        print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         b.quit()
         return
