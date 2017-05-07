@@ -17,7 +17,7 @@ import my_driver
 def main():
     count = 0
 
-    cal = 3
+    cal = 4
     step = int(100/cal)
     lngs = get_lngs(step)
     pool = my_threading.MyThreadPool.instance()
@@ -39,7 +39,7 @@ def main():
     # for t in concurrent.futures.as_completed(ts, timeout=2):
     for t in ts:
         try:
-            t.result(timeout=60 * 3)
+            t.result(timeout=60 * 5)
         except concurrent.futures.TimeoutError:
             t.cancel()
             print('[lat,lng] Cancelled')
