@@ -92,7 +92,7 @@ class Crawler(object):
             # pool.incr_count()
             store = storage.Storage()
             res = store.insert(bang)
-            
+
         b.quit()
         print('[%s] %s' % ("duplicated" if res is None else "success", url))
         print('released bang: %s' % threading.activeCount())
