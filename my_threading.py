@@ -22,6 +22,7 @@ class MyThreadPool(SingletonMixin):
         self.submit_count2 = 0
         self.count = 0
         self.insert_count = 0
+        self.id_dic = [{},{}]
 
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         self.executor2 = concurrent.futures.ThreadPoolExecutor(max_workers=20)
@@ -46,6 +47,10 @@ class MyThreadPool(SingletonMixin):
     def incr_insert_count(self):
         self.insert_count += 1
 
-    def get_id(self):
+    def get_id(self, _type):
         self.id += 1
+        self.id_dic[_type][self.id] = 0
         return self.id
+
+    def releas_id(self, _type, id):
+        self.id_dic[_type][id] = 1

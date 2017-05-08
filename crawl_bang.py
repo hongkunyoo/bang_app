@@ -30,10 +30,10 @@ class Crawler(object):
     def __init__(self):
         pass
         # threading.Thread.__init__(self)
-        pool = my_threading.MyThreadPool.instance()
-        self.my_id = pool.get_id()
+        self.pool = my_threading.MyThreadPool.instance()
 
     def crawl(self, url):
+        self.my_id = self.pool.get_id(1)
         self.url = url
         self.b = my_driver.get_driver(platform.system())
         self.run()
@@ -44,7 +44,7 @@ class Crawler(object):
         url = self.url
         b = self.b
         b.get(url)
-        print('[bang] Start: %s' % self.my_id)
+        # print('[bang] Start: %s' % self.my_id)
 
         time.sleep(3)
         scripts = b.find_elements_by_tag_name('script')
@@ -97,6 +97,7 @@ class Crawler(object):
             res = store.insert(bang)
 
         # print('[%s] %s' % ("duplicated" if res is None else "success", url))
-        print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
+        # print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
+        self.pool.releas_id(1, self.my_id)
         b.quit()
         return

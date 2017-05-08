@@ -25,12 +25,10 @@ class Crawl(object):
 
     def __init__(self, count):
         # threading.Thread.__init__(self)
-        pool = my_threading.MyThreadPool.instance()
-        self.my_id = pool.get_id()
-
+        self.pool = my_threading.MyThreadPool.instance()
 
     def crawl(self, lng, lat):
-
+        self.my_id = self.pool.get_id(0)
         self.lat = lat
         self.lng = lng
         # url = 'https://www.dabangapp.com/search#/map?id=11440101&type=region&filters={"deposit-range":[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s,%s],"zoom":16}&cluster={}' % (lng, lat)
@@ -46,7 +44,7 @@ class Crawl(object):
         time.sleep(rand)
 
         b.get(url)
-        print('[list] Start: %s' % self.my_id)
+        # print('[list] Start: %s' % self.my_id)
         return self.find_list(b, [])
 
     def find_list(self, b, ts):
@@ -56,7 +54,8 @@ class Crawl(object):
         # ts = []
         if len(elements) == 0:
             # print('no Room-item!: %s' % self.my_id)
-            print('[list] Released: %s' % self.my_id)
+            # print('[list] Released: %s' % self.my_id)
+            self.pool.releas_id(0, self.my_id)
             b.quit()
             return ts
         for el in elements:
@@ -79,13 +78,15 @@ class Crawl(object):
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
         except selenium.common.exceptions.NoSuchElementException:
-            print('[list] Released: %s' % self.my_id)
+            # print('[list] Released: %s' % self.my_id)
+            self.pool.releas_id(0, self.my_id)
             b.quit()
             return ts
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
-            print('[list] Released: %s' % self.my_id)
+            # print('[list] Released: %s' % self.my_id)
+            self.pool.releas_id(0, self.my_id)
             b.quit()
             return ts
         except selenium.common.exceptions.NoSuchElementException:

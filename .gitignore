@@ -6,3 +6,4 @@ phantomjs-linux/*
 chromedriver.exe
 png/*
 *.swp
+*.csv
