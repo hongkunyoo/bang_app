@@ -24,17 +24,20 @@ def check_status(f):
         lock.acquire()
         print('======[Thread: %s]=======' % threading.active_count())
         print('======[Thread: %s]=======' % threading.active_count(), file=f)
-        for i, mydic in enumerate(pool.id_dic):
-            print('-----[%s]-----' % ("list" if i == 0 else "bang"))
-            print('-----[%s]-----' % ("list" if i == 0 else "bang"), file=f)
-            for k, v in mydic.items():
-                if v == 0:
-                    print('[%04d] Not released' % k)
-                    print('[%04d] Not released' % k, file=f)
-                # else:
-                #     print('[%04d]     Released' % k)
-        print('========================')
-        print('========================', file=f)
+        try:
+            for i, mydic in enumerate(pool.id_dic):
+                print('-----[%s]-----' % ("list" if i == 0 else "bang"))
+                print('-----[%s]-----' % ("list" if i == 0 else "bang"), file=f)
+                for k, v in mydic.items():
+                    if v == 0:
+                        print('[%04d] Not released' % k)
+                        print('[%04d] Not released' % k, file=f)
+                    # else:
+                    #     print('[%04d]     Released' % k)
+            print('========================')
+            print('========================', file=f)
+        except RuntimeError:
+            pass
         f.flush()
         time.sleep(10)
         lock.release()
