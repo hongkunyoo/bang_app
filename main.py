@@ -17,8 +17,7 @@ import time
 # 우하(36.800000, 127.470000)
 
 
-def check_status(*args):
-    f = args[0]
+def check_status(f):
     pool = my_threading.MyThreadPool.instance()
     lock = threading.RLock()
     while True:
@@ -36,7 +35,7 @@ def check_status(*args):
                 #     print('[%04d]     Released' % k)
         print('========================')
         print('========================', file=f)
-
+        f.flush()
         time.sleep(10)
         lock.release()
 
