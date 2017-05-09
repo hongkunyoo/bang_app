@@ -60,3 +60,6 @@ class MyThreadPool(SingletonMixin):
 
     def releas_id(self, _type, id):
         self.id_dic[_type][id] = 1
+
+    def get_ts(self):
+        return self.ts

@@ -30,7 +30,7 @@ class Crawl(object):
     def crawl(self, lng, lat):
         self.my_id = self.pool.get_id(0)
         self.f = open('logs/%04d.txt' % self.my_id, 'w')
-        print('-START crawl list-', file=self.f)
+        print('---START crawl list---', file=self.f)
         self.lat = lat
         self.lng = lng
         # url = 'https://www.dabangapp.com/search#/map?id=11440101&type=region&filters={"deposit-range":[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s,%s],"zoom":16}&cluster={}' % (lng, lat)
@@ -50,7 +50,7 @@ class Crawl(object):
         print('b.get', file=self.f)
         # print('[list] Start: %s' % self.my_id)
         ts = self.find_list(b, [], 30)
-        print('-END crawl list-', file=self.f)
+        print('---END crawl list---', file=self.f)
         self.pool.releas_id(0, self.my_id)
         b.quit()
         self.f.close()
@@ -70,13 +70,15 @@ class Crawl(object):
             # print('no Room-item!: %s' % self.my_id)
             # print('[list] Released: %s' % self.my_id)
             return ts
-        for el in elements:
+        print('[find list] for el in elements', file=self.f)
+        for idx, el in enumerate(elements):
             a_tag = el.find_element_by_tag_name("a")
             href = a_tag.get_attribute('href')
             c = crawl_bang.Crawler()
             # c.crawl(href)
             t = pool.submit2(c.crawl, href)
             ts.append(t)
+            print('[find list] %s bang crawl' % idx, file=self.f)
 
         # for t in ts:
         #     try:
@@ -97,7 +99,7 @@ class Crawl(object):
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
             # print('[list] Released: %s' % self.my_id)
-            print('[find list] no such disable', file=self.f)
+            print('[find list] no more next button', file=self.f)
             return ts
         except selenium.common.exceptions.NoSuchElementException:
             next_btn.click()

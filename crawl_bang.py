@@ -35,7 +35,7 @@ class Crawler(object):
     def crawl(self, url):
         self.my_id = self.pool.get_id(1)
         self.f = open('logs/%04d.txt' % self.my_id, 'w')
-        print('-START crawl bang-', file=self.f)
+        print('---START crawl bang---', file=self.f)
         self.url = url
         self.b = my_driver.get_driver(platform.system())
         self.run()
@@ -75,7 +75,7 @@ class Crawler(object):
 
             if "dabang.web.detail" not in innerHTML:
                 continue
-            print('[bang] find script!', file=self.f)
+            print('[bang] ***find script!***', file=self.f)
             my_json = re.findall(r'dabang.web.detail\((.*)\);', innerHTML)[0]
             my_json = ",".join(my_json.split(',')[:-1])
             j = json.loads(my_json)
@@ -101,12 +101,12 @@ class Crawler(object):
             # pool.incr_count()
             store = storage.Storage()
             res = store.insert(bang)
+            print('[%s] %s' % ("duplicated" if res is None else "success", url), file=self.f)
 
-        # print('[%s] %s' % ("duplicated" if res is None else "success", url))
         # print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         self.pool.releas_id(1, self.my_id)
         b.quit()
-        print('-END crawl bang-', file=self.f)
+        print('---END crawl bang---', file=self.f)
         self.f.close()
 
         return
