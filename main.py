@@ -75,6 +75,7 @@ def main():
         except concurrent.futures.TimeoutError as e:
             print('[list] Cancelled: %s' % t.cancel())
             print('[list] Cancelled: %s' % t.cancel(), file=f2)
+        f2.flush()
 
     check_t.join(15)
     print('done')
