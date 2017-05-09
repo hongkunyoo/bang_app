@@ -34,7 +34,7 @@ class Crawler(object):
 
     def crawl(self, url):
         self.my_id = self.pool.get_id(1)
-        self.f = open('logs/%s.txt' % self.my_id, 'w')
+        self.f = open('logs/%04d.txt' % self.my_id, 'w')
         print('-START crawl bang-', file=self.f)
         self.url = url
         self.b = my_driver.get_driver(platform.system())

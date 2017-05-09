@@ -29,7 +29,7 @@ class Crawl(object):
 
     def crawl(self, lng, lat):
         self.my_id = self.pool.get_id(0)
-        self.f = open('logs/%s.txt' % self.my_id, 'w')
+        self.f = open('logs/%04d.txt' % self.my_id, 'w')
         print('-START crawl list-', file=self.f)
         self.lat = lat
         self.lng = lng
