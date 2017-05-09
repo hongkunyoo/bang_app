@@ -23,7 +23,7 @@ by_mapper = {
 
 class Crawl(object):
 
-    def __init__(self, count):
+    def __init__(self):
         # threading.Thread.__init__(self)
         self.pool = my_threading.MyThreadPool.instance()
 
@@ -33,8 +33,10 @@ class Crawl(object):
         print('---START crawl list---', file=self.f)
         self.lat = lat
         self.lng = lng
-        # url = 'https://www.dabangapp.com/search#/map?id=11440101&type=region&filters={"deposit-range":[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s,%s],"zoom":16}&cluster={}' % (lng, lat)
-        url = 'https://www.dabangapp.com/search#/map?id=&type=search&filters={"deposit-range":[0,999999],"price-range":[0,999999],"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&position={"center":[%s, %s],"zoom":16}&cluster={}' % (lat, lng)
+        url = 'https://www.dabangapp.com/search#/map?id=&type=search&' \
+              'filters={"deposit-range":[0,999999],"price-range":[0,999999],' \
+              '"room-type":[0,1,2,3,4,5],"deal-type":[0,1]}&' \
+              'position={"center":[%s, %s],"zoom":16}&cluster={}' % (lat, lng)
         self.url = url
         print('url: %s' % url, file=self.f)
         self.b = my_driver.get_driver(platform.system())
@@ -79,15 +81,6 @@ class Crawl(object):
             t = pool.submit2(c.crawl, href)
             ts.append(t)
             print('[find list] %s bang crawl' % idx, file=self.f)
-
-        # for t in ts:
-        #     try:
-        #         t.result(timeout=60 * 5)
-        #     except concurrent.futures.TimeoutError:
-        #         t.cancel()
-        #         print('[bang] Cancelled: %s' % c.my_id)
-        #         b.quit()
-        #         return
 
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
