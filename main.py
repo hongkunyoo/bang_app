@@ -19,18 +19,21 @@ import time
 
 def check_status():
     pool = my_threading.MyThreadPool.instance()
+    lock = threading.RLock()
     while True:
-
+        lock.acquire()
         print('======[Thread: %s]=======' % threading.active_count())
         for i, mydic in enumerate(pool.id_dic):
             print('-----[%s]-----' % ("list" if i == 0 else "bang"))
             for k, v in mydic.items():
                 if v == 0:
                     print('[%04d] Not released' % k)
-                else:
-                    print('[%04d]     Released' % k)
+                # else:
+                #     print('[%04d]     Released' % k)
         print('========================')
+
         time.sleep(10)
+        lock.release()
 
 
 def main():
@@ -56,16 +59,23 @@ def main():
 
             count += 1
     check_t.start()
-    # for t in concurrent.futures.as_completed(ts, timeout=2):
+    # for t in concurrent.futures.wait(ts, timeout=60):
     for t in ts:
+        tts = []
         try:
-            tts = t.result(timeout=60 * 8)
+            tts = t.result(timeout=6 * 1)
+            # tts = t.result()
 
-            for tt in tts:
-                tt.result(timeout=60 * 5)
-        except concurrent.futures.TimeoutError:
-            t.cancel()
-            print('[list] Cancelled: %s' % c.my_id)
+        except concurrent.futures.TimeoutError as e:
+            print(dir(t))
+            print('[list] Cancelled: %s' % t.cancel())
+        # for tt in concurrent.futures.wait(tts, timeout=60):
+        for tt in tts:
+            try:
+                tt.result(timeout=60 * 3)
+                # tt.result()
+            except concurrent.futures.TimeoutError:
+                print('[bang] Cancelled: %s' % tt.cancel())
 
     check_t.join(15)
     print('done')

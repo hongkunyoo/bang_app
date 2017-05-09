@@ -45,9 +45,13 @@ class Crawl(object):
 
         b.get(url)
         # print('[list] Start: %s' % self.my_id)
-        return self.find_list(b, [])
+        return self.find_list(b, [], 30)
 
-    def find_list(self, b, ts):
+    def find_list(self, b, ts, until):
+        if until <= 0:
+            self.pool.releas_id(0, self.my_id)
+            b.quit()
+            return ts
         time.sleep(10)
         elements = b.find_elements_by_class_name("Room-item")
         pool = my_threading.MyThreadPool.instance()
@@ -91,6 +95,6 @@ class Crawl(object):
             return ts
         except selenium.common.exceptions.NoSuchElementException:
             next_btn.click()
-            return self.find_list(b, ts)
+            return self.find_list(b, ts, until-1)
 
 
