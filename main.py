@@ -60,22 +60,13 @@ def main():
             count += 1
     check_t.start()
     # for t in concurrent.futures.wait(ts, timeout=60):
-    for t in ts:
-        tts = []
-        try:
-            tts = t.result(timeout=6 * 1)
-            # tts = t.result()
 
+    for t in pool.ts:
+        try:
+            t.result(timeout=60 * 3)
+            # tts = t.result()
         except concurrent.futures.TimeoutError as e:
-            print(dir(t))
             print('[list] Cancelled: %s' % t.cancel())
-        # for tt in concurrent.futures.wait(tts, timeout=60):
-        for tt in tts:
-            try:
-                tt.result(timeout=60 * 3)
-                # tt.result()
-            except concurrent.futures.TimeoutError:
-                print('[bang] Cancelled: %s' % tt.cancel())
 
     check_t.join(15)
     print('done')

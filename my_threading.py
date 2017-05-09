@@ -23,6 +23,7 @@ class MyThreadPool(SingletonMixin):
         self.count = 0
         self.insert_count = 0
         self.id_dic = [{},{}]
+        self.ts = []
 
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         self.executor2 = concurrent.futures.ThreadPoolExecutor(max_workers=20)
@@ -32,14 +33,19 @@ class MyThreadPool(SingletonMixin):
         # print('active1: %s' % threading.activeCount())
         self.submit_count1 += 1
 
-        return self.executor.submit(func, *args)
+        t = self.executor.submit(func, *args)
+        self.ts.append(t)
+        return t
+
 
     def submit2(self, func, *args):
         # print('in submit2: %s' % self.submit_count2)
         # print('active2: %s' % threading.activeCount())
         self.submit_count2 += 1
 
-        return self.executor2.submit(func, *args)
+        t = self.executor2.submit(func, *args)
+        self.ts.append(t)
+        return t
 
     def incr_count(self):
         self.count += 1
