@@ -53,6 +53,7 @@ def main():
     # t = pool.submit(c.crawl, 37.3, 126.97)
     # ts.append(t)
     f = open('logs/0000.txt', 'w')
+    f2 = open('logs/00000.txt', 'w')
     check_t = threading.Thread(target=check_status, args=(f, ))
 
     for lng in lngs:
@@ -69,16 +70,17 @@ def main():
         try:
             t.result(timeout=60 * 3)
             print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())))
-            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())), file=f)
+            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())), file=f2)
             # tts = t.result()
         except concurrent.futures.TimeoutError as e:
             print('[list] Cancelled: %s' % t.cancel())
-            print('[list] Cancelled: %s' % t.cancel(), file=f)
+            print('[list] Cancelled: %s' % t.cancel(), file=f2)
 
     check_t.join(15)
     print('done')
     print('done', file=f)
     f.close()
+    f2.close()
 
 
 # 37
