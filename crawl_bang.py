@@ -102,6 +102,7 @@ class Crawler(object):
             store = storage.Storage()
             res = store.insert(bang)
             print('[%s] %s' % ("duplicated" if res is None else "success", url), file=self.f)
+            break
 
         # print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         self.pool.releas_id(1, self.my_id)
