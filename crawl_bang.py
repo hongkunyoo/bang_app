@@ -13,7 +13,8 @@ import storage
 import my_threading
 import my_driver
 import urllib
-
+import util
+import sys
 
 
 by_mapper = {
@@ -34,8 +35,9 @@ class Crawler(object):
 
     def crawl(self, url):
         self.my_id = self.pool.get_id(1)
-        self.f = open('logs/%04d.txt' % self.my_id, 'w')
-        print('---START crawl bang---', file=self.f)
+        # self.f = open('logs/%04d.txt' % self.my_id, 'w')
+        self.f = None
+        util.print('---START crawl bang---', file=self.f)
         self.url = url
         self.b = my_driver.get_driver(platform.system())
         self.run()
@@ -44,23 +46,23 @@ class Crawler(object):
         rand = random.randint(2, 10)
         time.sleep(rand)
         url = self.url
-        print('url: %s' % url, file=self.f)
+        util.my_print('url: %s' % url, file=self.f)
         b = self.b
         b.get(url)
-        print('b.get', file=self.f)
+        util.my_print('b.get', file=self.f)
 
         time.sleep(3)
         scripts = b.find_elements_by_tag_name('script')
 
         def find_until(until, _script):
-            print('start find until', file=self.f)
+            util.my_print('start find until', file=self.f)
             if until <= 0:
-                print('[find bang] in if until', file=self.f)
+                util.my_print('[find bang] in if until', file=self.f)
                 return ""
             time.sleep(3)
             try:
                 innerHTML = _script.get_attribute('innerHTML')
-                print('[find bang] innerHTML', file=self.f)
+                util.my_print('[find bang] innerHTML', file=self.f)
                 return innerHTML
             except Exception:
                 return find_until(until-1, _script)
@@ -75,7 +77,7 @@ class Crawler(object):
 
             if "dabang.web.detail" not in innerHTML:
                 continue
-            print('[bang] ***find script!***', file=self.f)
+            util.my_print('[bang] ***find script!***', file=self.f)
             my_json = re.findall(r'dabang.web.detail\((.*)\);', innerHTML)[0]
             my_json = ",".join(my_json.split(',')[:-1])
             j = json.loads(my_json)
@@ -101,13 +103,13 @@ class Crawler(object):
             # pool.incr_count()
             store = storage.Storage()
             res = store.insert(bang)
-            print('[%s] %s' % ("duplicated" if res is None else "success", url), file=self.f)
+            util.my_print('[%s] %s' % ("duplicated" if res is None else "success", url), file=self.f)
             break
 
-        print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
+        util.my_print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         self.pool.releas_id(1, self.my_id)
         b.quit()
-        print('---END crawl bang---', file=self.f)
+        util.my_print('---END crawl bang---', file=self.f)
         self.f.close()
 
         return

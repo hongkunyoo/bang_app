@@ -7,6 +7,8 @@ import pandas as pd
 import time
 import argparse
 import coffeewhale
+import util
+import sys
 
 # (lng, lat)
 # left_high (37.800000, 126.470000)
@@ -20,20 +22,17 @@ def check_status(f):
     lock = threading.RLock()
     while True:
         lock.acquire()
-        print('======[Thread: %s]=======' % threading.active_count())
-        print('======[Thread: %s]=======' % threading.active_count(), file=f)
+
+        util.my_print('======[Thread: %s]=======' % threading.active_count(), file=f)
         try:
             for i, mydic in enumerate(pool.id_dic):
-                print('-----[%s]-----' % ("list" if i == 0 else "bang"))
-                print('-----[%s]-----' % ("list" if i == 0 else "bang"), file=f)
+                util.my_print('-----[%s]-----' % ("list" if i == 0 else "bang"), file=f)
                 for k, v in mydic.items():
                     if v == 0:
-                        print('[%04d] Not released' % k)
-                        print('[%04d] Not released' % k, file=f)
+                        util.my_print('[%04d] Not released' % k, file=f)
                     # else:
                     #     print('[%04d]     Released' % k)
-            print('========================')
-            print('========================', file=f)
+            util.my_print('========================', file=f)
         except RuntimeError:
             pass
         f.flush()
@@ -63,8 +62,10 @@ def crawl(cal):
     pool = my_threading.MyThreadPool.instance()
     ts = []
 
-    f = open('logs/0000.txt', 'w')
-    f2 = open('logs/00000.txt', 'w')
+    # f = open('logs/0000.txt', 'w')
+    # f2 = open('logs/00000.txt', 'w')
+    f = sys.stdout
+    f2 = sys.stdout
     check_t = threading.Thread(target=check_status, args=(f, ))
 
     for lng in lngs:
@@ -79,17 +80,14 @@ def crawl(cal):
     for idx, t in enumerate(pool.get_ts()):
         try:
             t.result(timeout=60 * 3)
-            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())))
-            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())), file=f2)
+            util.my_print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())), file=f2)
             # tts = t.result()
         except concurrent.futures.TimeoutError as e:
-            print('[list] Cancelled: %s' % t.cancel())
-            print('[list] Cancelled: %s' % t.cancel(), file=f2)
+            util.my_print('[list] Cancelled: %s' % t.cancel(), file=f2)
         f2.flush()
 
     check_t.join(15)
-    print('done')
-    print('done', file=f)
+    util.my_print('done', file=f)
     f.close()
     f2.close()
 
