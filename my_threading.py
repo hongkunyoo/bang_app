@@ -37,7 +37,6 @@ class MyThreadPool(SingletonMixin):
         self.ts.append(t)
         return t
 
-
     def submit2(self, func, *args):
         # print('in submit2: %s' % self.submit_count2)
         # print('active2: %s' % threading.activeCount())

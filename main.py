@@ -22,20 +22,19 @@ def check_status(f):
     lock = threading.RLock()
     while True:
         lock.acquire()
-
-        util.my_print('======[Thread: %s]=======' % threading.active_count(), file=f)
+        print('======[Thread: %s]=======' % threading.active_count())
         try:
             for i, mydic in enumerate(pool.id_dic):
-                util.my_print('-----[%s]-----' % ("list" if i == 0 else "bang"), file=f)
+                print('-----[%s]-----' % ("list" if i == 0 else "bang"))
                 for k, v in mydic.items():
                     if v == 0:
-                        util.my_print('[%04d] Not released' % k, file=f)
+                        print('[%04d] Not released' % k)
                     # else:
                     #     print('[%04d]     Released' % k)
-            util.my_print('========================', file=f)
+            print('========================')
         except RuntimeError:
             pass
-        f.flush()
+        # f.flush()
         time.sleep(10)
         lock.release()
 
@@ -64,7 +63,7 @@ def crawl(cal):
 
     # f = open('logs/0000.txt', 'w')
     # f2 = open('logs/00000.txt', 'w')
-    f = sys.stdout
+    f = None
     f2 = sys.stdout
     check_t = threading.Thread(target=check_status, args=(f, ))
 
@@ -80,16 +79,16 @@ def crawl(cal):
     for idx, t in enumerate(pool.get_ts()):
         try:
             t.result(timeout=60 * 3)
-            util.my_print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())), file=f2)
+            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())))
             # tts = t.result()
         except concurrent.futures.TimeoutError as e:
-            util.my_print('[list] Cancelled: %s' % t.cancel(), file=f2)
+            util.my_print('[list] Cancelled: %s' % t.cancel())
         f2.flush()
 
     check_t.join(15)
-    util.my_print('done', file=f)
-    f.close()
-    f2.close()
+    util.my_print('done')
+    # f.close()
+    # f2.close()
 
 
 # 37
