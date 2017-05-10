@@ -110,6 +110,6 @@ class Crawler(object):
         self.pool.releas_id(1, self.my_id)
         b.quit()
         util.my_print('---END crawl bang---', file=self.f)
-        self.f.close()
+        util.close_file(self.f)
 
         return

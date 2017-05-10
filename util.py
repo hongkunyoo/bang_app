@@ -1,5 +1,4 @@
 import sys
-import collections
 
 
 def my_print(str, file=sys.stdout):
@@ -10,3 +9,8 @@ def my_print(str, file=sys.stdout):
             print(str, file=f)
     else:
         print(str, file=file)
+
+
+def close_file(f):
+    if f is not None:
+        f.close()

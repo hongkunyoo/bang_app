@@ -56,7 +56,7 @@ class Crawl(object):
         util.my_print('---END crawl list---', file=self.f)
         self.pool.releas_id(0, self.my_id)
         b.quit()
-        self.f.close()
+        util.close_file(self.f)
         return ts
 
     def find_list(self, b, ts, until):
