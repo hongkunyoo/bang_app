@@ -106,8 +106,8 @@ class Crawler(object):
             util.my_print('[%s] %s' % ("duplicated" if res is None else "success", url))
             break
 
-        util.my_print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         self.pool.releas_id(1, self.my_id)
+        util.my_print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
         b.quit()
         util.my_print('---END crawl bang---')
 

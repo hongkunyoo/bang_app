@@ -1,7 +1,7 @@
 import sys
 
 
-flag = True
+flag = False
 def my_print(str):
     if flag:
         print(str)

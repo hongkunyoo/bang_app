@@ -24,13 +24,20 @@ def check_status(f):
         lock.acquire()
         print('======[Thread: %s]=======' % threading.active_count())
         try:
+            count_list = 0
+            count_bang = 0
             for i, mydic in enumerate(pool.id_dic):
                 print('-----[%s]-----' % ("list" if i == 0 else "bang"))
                 for k, v in mydic.items():
                     if v == 0:
                         print('[%04d] Not released' % k)
+                        if i == 0:
+                            count_list += 1
+                        else:
+                            count_bang += 1
                     # else:
                     #     print('[%04d]     Released' % k)
+            print('*Count [list: %s ] / [bang: %s]*' % (count_list, count_bang))
             print('========================')
         except RuntimeError:
             pass
@@ -64,29 +71,34 @@ def crawl(cal):
     # f = open('logs/0000.txt', 'w')
     # f2 = open('logs/00000.txt', 'w')
     f = None
-    f2 = sys.stdout
+    # f2 = sys.stdout
     check_t = threading.Thread(target=check_status, args=(f, ))
 
+    idx = 0
     for lng in lngs:
         lats = get_lats(step)
         for lat in lats:
             c = crawl_list.Crawl()
+            # print('crawl c: %s' % idx)
+            idx += 1
             t = pool.submit(c.crawl, lng, lat)
             ts.append(t)
 
     check_t.start()
     # for t in concurrent.futures.wait(ts, timeout=60):
-    for idx, t in enumerate(pool.get_ts()):
+    # for idx, t in enumerate(pool.get_ts1()):
+    while not pool.is_empty_Q():
         try:
+            t = pool.get_item()
             t.result(timeout=60 * 3)
-            print('***[%04d thread done! (%s)]***' % (idx, len(pool.get_ts())))
+            print('***[%04d thread done! (%s)]***' % (idx, pool.get_size()))
             # tts = t.result()
         except concurrent.futures.TimeoutError as e:
-            util.my_print('[list] Cancelled: %s' % t.cancel())
-        f2.flush()
+            print('[list] Cancelled: %s' % t.cancel())
+        # f2.flush()
 
     check_t.join(15)
-    util.my_print('done')
+    print('done')
     # f.close()
     # f2.close()
 

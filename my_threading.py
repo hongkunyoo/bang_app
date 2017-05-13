@@ -1,6 +1,6 @@
 import concurrent.futures
 import threading
-
+from queue import Queue
 
 class SingletonMixin(object):
     __singleton_lock = threading.Lock()
@@ -23,7 +23,9 @@ class MyThreadPool(SingletonMixin):
         self.count = 0
         self.insert_count = 0
         self.id_dic = [{},{}]
-        self.ts = []
+        self.ts1 = []
+        self.ts2 = []
+        self.q = Queue()
 
         self.executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
         self.executor2 = concurrent.futures.ThreadPoolExecutor(max_workers=20)
@@ -34,7 +36,8 @@ class MyThreadPool(SingletonMixin):
         self.submit_count1 += 1
 
         t = self.executor.submit(func, *args)
-        self.ts.append(t)
+        self.q.put(t)
+        # self.ts1.append(t)
         return t
 
     def submit2(self, func, *args):
@@ -43,7 +46,8 @@ class MyThreadPool(SingletonMixin):
         self.submit_count2 += 1
 
         t = self.executor2.submit(func, *args)
-        self.ts.append(t)
+        self.q.put(t)
+        # self.ts2.append(t)
         return t
 
     def incr_count(self):
@@ -60,5 +64,11 @@ class MyThreadPool(SingletonMixin):
     def releas_id(self, _type, id):
         self.id_dic[_type][id] = 1
 
-    def get_ts(self):
-        return self.ts
+    def get_size(self):
+        return self.q.qsize()
+
+    def get_item(self):
+        return self.q.get()
+
+    def is_empty_Q(self):
+        return self.q.empty()
