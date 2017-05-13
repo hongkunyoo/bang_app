@@ -4,7 +4,8 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
 PATH_LIST = {
     "Windows": 'phantomjs-windows/bin/phantomjs.exe',
-    "Linux": 'phantomjs-linux/bin/phantomjs'
+    "Linux": 'phantomjs-linux/bin/phantomjs',
+    "Darwin": 'phantomjs-macos/bin/phantomjs'
 }
 
 

@@ -3,6 +3,7 @@ ghostdriver.log
 *.pyc
 phantomjs-windows/*
 phantomjs-linux/*
+phantomjs-macos/*
 chromedriver.exe
 png/*
 logs/*
