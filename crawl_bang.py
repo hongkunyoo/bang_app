@@ -15,6 +15,7 @@ import my_driver
 import urllib
 import util
 import sys
+import coffeewhale
 
 
 by_mapper = {
@@ -105,6 +106,12 @@ class Crawler(object):
             break
 
         print('[bang] Released: %s ' % "duplicated" if res is None else "success", url)
+        if res is not None:
+            obj = {
+                'msg': 'success!',
+                'url': url
+            }
+            coffeewhale.notify(obj=obj)
         b.quit()
         util.my_print('---END crawl bang---')
 

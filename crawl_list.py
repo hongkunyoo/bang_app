@@ -68,7 +68,7 @@ class Crawl(object):
         # ts = []
         if len(elements) == 0:
             util.my_print('[find list] len(elements)==0')
-            # print('no Room-item!: %s' % self.my_id)
+            print('[list] len(elmt)==0')
             # print('[list] Released: %s' % self.my_id)
             return ts
         util.my_print('[find list] for el in elements')
@@ -81,19 +81,19 @@ class Crawl(object):
             pool.submit(c.crawl, c.cancel, wait_until, href)
             # t = pool.submit2(c.crawl, href)
             # ts.append(t)
-            util.my_print('[find list] %s bang crawl' % idx)
+            print('[list] found bang!')
 
         try:
             next_btn = b.find_element_by_class_name('Pagination-item--next')
         except selenium.common.exceptions.NoSuchElementException:
             # print('[list] Released: %s' % self.my_id)
-            util.my_print('[find list] no such next')
+            print('[list] no next button')
             return ts
         time.sleep(2)
         try:
             b.find_element_by_css_selector(".Pagination-item--next.disable")
             # print('[list] Released: %s' % self.my_id)
-            util.my_print('[find list] no more next button')
+            print('[list] found disable button')
             return ts
         except selenium.common.exceptions.NoSuchElementException:
             next_btn.click()
