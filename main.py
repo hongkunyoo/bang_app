@@ -1,6 +1,6 @@
 import crawl_list
 import storage
-import my_threading
+import bang_threading
 import concurrent
 import threading
 import pandas as pd
@@ -18,7 +18,7 @@ import sys
 
 
 def check_status(f):
-    pool = my_threading.MyThreadPool.instance()
+    pool = bang_threading.ThreadPool.instance()
     lock = threading.RLock()
     while True:
         lock.acquire()
@@ -26,18 +26,13 @@ def check_status(f):
         try:
             count_list = 0
             count_bang = 0
-            for i, mydic in enumerate(pool.id_dic):
-                print('-----[%s]-----' % ("list" if i == 0 else "bang"))
-                for k, v in mydic.items():
-                    if v == 0:
-                        print('[%04d] Not released' % k)
-                        if i == 0:
-                            count_list += 1
-                        else:
-                            count_bang += 1
-                    # else:
-                    #     print('[%04d]     Released' % k)
-            print('*Count [list: %s ] / [bang: %s]*' % (count_list, count_bang))
+            # for i, mydic in enumerate(pool.id_dic):
+
+            for k, v in pool.id_dic.items():
+                if v == 0:
+                    print('[%04d] Not released' % k)
+                # else:
+                #     print('[%04d]     Released' % k)
             print('========================')
         except RuntimeError:
             pass
@@ -60,12 +55,12 @@ def main():
         print_total_len()
 
 
-@coffeewhale.alarmable
+# @coffeewhale.alarmable
 def crawl(cal):
 
     step = int(100/cal)
     lngs = get_lngs(step)
-    pool = my_threading.MyThreadPool.instance()
+    pool = bang_threading.ThreadPool.instance()
     ts = []
 
     # f = open('logs/0000.txt', 'w')
@@ -73,7 +68,7 @@ def crawl(cal):
     f = None
     # f2 = sys.stdout
     check_t = threading.Thread(target=check_status, args=(f, ))
-
+    wait_until = 60 * 5
     idx = 0
     for lng in lngs:
         lats = get_lats(step)
@@ -81,23 +76,24 @@ def crawl(cal):
             c = crawl_list.Crawl()
             # print('crawl c: %s' % idx)
             idx += 1
-            t = pool.submit(c.crawl, lng, lat)
-            ts.append(t)
+            pool.submit(c.crawl, c.cancel, wait_until, lng, lat)
+            # t = pool.submit(c.crawl, lng, lat)
+            # ts.append(t)
 
     check_t.start()
+    pool.join()
     # for t in concurrent.futures.wait(ts, timeout=60):
     # for idx, t in enumerate(pool.get_ts1()):
-    while not pool.is_empty_Q():
-        try:
-            t = pool.get_item()
-            t.result(timeout=60 * 3)
-            print('***[%04d thread done! (%s)]***' % (idx, pool.get_size()))
-            # tts = t.result()
-        except concurrent.futures.TimeoutError as e:
-            print('[list] Cancelled: %s' % t.cancel())
-        # f2.flush()
+    # while not pool.is_empty_Q():
+    #     try:
+    #         t = pool.get_item()
+    #         t.result(timeout=60 * 3)
+    #         print('***[%04d thread done! (%s)]***' % (idx, pool.get_size()))
+    #         # tts = t.result()
+    #     except concurrent.futures.TimeoutError as e:
+    #         print('[list] Cancelled: %s' % t.cancel())
 
-    check_t.join(15)
+    # check_t.join(15)
     print('done')
     # f.close()
     # f2.close()

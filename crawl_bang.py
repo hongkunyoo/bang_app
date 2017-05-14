@@ -10,7 +10,7 @@ import re
 import json
 import pprint
 import storage
-import my_threading
+import bang_threading
 import my_driver
 import urllib
 import util
@@ -31,10 +31,8 @@ class Crawler(object):
     def __init__(self):
         pass
         # threading.Thread.__init__(self)
-        self.pool = my_threading.MyThreadPool.instance()
 
     def crawl(self, url):
-        self.my_id = self.pool.get_id(1)
         # self.f = open('logs/%04d.txt' % self.my_id, 'w')
         self.f = None
         util.my_print('---START crawl bang---')
@@ -43,6 +41,7 @@ class Crawler(object):
         self.run()
 
     def run(self):
+        self.start = time.time()
         rand = random.randint(2, 10)
         time.sleep(rand)
         url = self.url
@@ -99,16 +98,18 @@ class Crawler(object):
             bang['PartitionKey'] = str(bang['id'])
             bang['RowKey'] = str(bang['seq'])
 
-            # pool = my_threading.MyThreadPool.instance()
             # pool.incr_count()
             store = storage.Storage()
             res = store.insert(bang)
             util.my_print('[%s] %s' % ("duplicated" if res is None else "success", url))
             break
 
-        self.pool.releas_id(1, self.my_id)
-        util.my_print('[bang] Released: %s (%s)' % (self.my_id, ("duplicated" if res is None else "success", url)))
+        print('[bang] Released: %s ' % "duplicated" if res is None else "success", url)
         b.quit()
         util.my_print('---END crawl bang---')
 
         return
+
+    def cancel(self):
+        self.b.quit()
+        print('crawl: ', time.time() - self.start)
