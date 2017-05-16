@@ -4,6 +4,7 @@ import concurrent.futures
 import time
 import my_driver
 import platform
+import sys, traceback
 
 
 class SingletonMixin(object):
@@ -23,6 +24,8 @@ def cancelable(func):
         try:
             func(*args, **kwargs)
         except Exception as e:
+            ex_type, ex, tb = sys.exc_info()
+            traceback.print_tb(tb)
             print('cancelled: ', e)
 
     return inner_func
@@ -70,11 +73,14 @@ class CancelableThread(threading.Thread):
         self.q = q
         self.worker = MyWorker(on_run, on_cancel, *args)
 
+    def init(self, sema, pool):
+        self.sema = sema
+        self.pool = pool
+
     def run(self):
         self.start = time.time()
         self.worker.start()
-        pool = ThreadPool.instance()
-        pool.start(self.ident)
+        self.pool.start(self.ident)
         self.worker.join(self.wait_until)
         if self.worker.isAlive():
             self.worker.cancel()
@@ -84,7 +90,7 @@ class CancelableThread(threading.Thread):
         # self.event.set()
         self.q.task_done()
         self.sema.release()
-        pool.release(self.ident)
+        self.pool.release(self.ident)
 
 
 class ThreadPool(SingletonMixin):
@@ -94,12 +100,17 @@ class ThreadPool(SingletonMixin):
         self.q = Queue(num_threads)
         self.num_of_thread = num_threads
         self.id_dic = {}
+        self.lock = threading.Lock()
 
     def start(self, ident):
+        self.lock.acquire()
         self.id_dic[ident] = 0
+        self.lock.release()
 
     def release(self, ident):
+        self.lock.acquire()
         self.id_dic[ident] = 1
+        self.lock.release()
 
     # def get_id(self, _type):
     #     self.id += 1
@@ -119,46 +130,41 @@ class ThreadPool(SingletonMixin):
 
         return c
 
-    # def assign_thread(self):
-    #     print('start assign thread')
-    #     count = 0
-    #     while not (self.q.empty() and len(self.tasks) == 0):
-    #         c = self.q.get()
-    #         count += 1
-    #         c.start()
-    #         c.join()
-    #
-    #     print('end assign_thread')
+    def assign_thread(self, event):
+        print('start assign thread')
+        count = 0
+        q = self.q
+        tasks = self.tasks,
+        s = threading.Semaphore(self.num_of_thread)
+        pool = self.instance()
+        while not (q.empty() and len(tasks) == 0 and self.is_all_released()):
+            s.acquire()
+            c = q.get()
+            c.init(s, pool)
+            count += 1
+            c.start()
+        event.set()
+
+        print('end assign_thread')
 
     def join(self):
-        # assign_t = threading.Thread(target=self.assign_thread)
-        assign_t = threading.Thread(target=assign_thread, args=(self.q, self.tasks, self.num_of_thread))
+        event = threading.Event()
+        assign_t = threading.Thread(target=self.assign_thread, args=(event, ))
         assign_t.start()
         put_count = 0
-        while len(self.tasks) != 0:
+
+        while len(self.tasks) != 0 or not event.isSet():
+            if len(self.tasks) == 0:
+                time.sleep(5)
+                continue
             c = self.tasks.pop(0)
             self.q.put(c)
-            # print('put')
             put_count += 1
         self.q.join()
         assign_t.join()
 
-
-def assign_thread(q, tasks, num):
-    print('start assign thread')
-    count = 0
-    s = threading.Semaphore(num)
-    while not (q.empty() and len(tasks) == 0):
-        s.acquire()
-        c = q.get()
-        c.sema = s
-        # print('get')
-        count += 1
-        c.start()
-        # c.event.wait()
-        # print('active: ', threading.active_count())
-
-    print('end assign_thread')
+    def is_all_released(self):
+        return all(v == 1 for v in self.id_dic.values())
 
 
 def main():

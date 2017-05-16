@@ -42,6 +42,7 @@ class Crawler(object):
         self.run()
 
     def run(self):
+        # print('start bang!')
         self.start = time.time()
         rand = random.randint(2, 10)
         time.sleep(rand)
@@ -111,12 +112,10 @@ class Crawler(object):
                 'msg': 'success!',
                 'url': url
             }
-            coffeewhale.notify(obj=obj)
+            coffeewhale.notify(obj=obj, url='https://hooks.slack.com/services/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')
         b.quit()
         util.my_print('---END crawl bang---')
-
         return
 
     def cancel(self):
         self.b.quit()
-        print('crawl: ', time.time() - self.start)

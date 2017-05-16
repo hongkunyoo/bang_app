@@ -39,12 +39,14 @@ def check_status(f):
         # f.flush()
         time.sleep(10)
         lock.release()
+        if pool.is_all_released():
+            break
 
 
 def main():
     parser = argparse.ArgumentParser(description='bang app')
     parser.add_argument('-c', type=str, default='crawl')
-    parser.add_argument('-num', type=int, default=10)
+    parser.add_argument('-num', type=int, default=2)
 
     args = parser.parse_args()
     if args.c == 'crawl':
