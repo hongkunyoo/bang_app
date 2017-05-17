@@ -26,6 +26,6 @@ class Storage(object):
     def get_entity(self, id, seq):
         return self.table_service.get_entity(self.table_name, id, seq)
 
-    def get_entities(self):
-        return self.table_service.query_entities(self.table_name, filter=None, select=None,
-                                                 num_results=None, marker=None)
+    def get_entities(self, num_results=None, filter_=None):
+        return self.table_service.query_entities(self.table_name, filter=filter_, select=None,
+                                                 num_results=num_results, marker=None)
