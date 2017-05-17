@@ -5,6 +5,7 @@ import time
 import my_driver
 import platform
 import sys, traceback
+import coffeewhale
 
 
 class SingletonMixin(object):
@@ -143,8 +144,10 @@ class ThreadPool(SingletonMixin):
             c.init(s, pool)
             count += 1
             c.start()
-        event.set()
 
+        event.set()
+        coffeewhale.notify(msg='end assign_thread!',
+                           url='https://hooks.slack.com/services/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')
         print('end assign_thread')
 
     def join(self):
@@ -153,15 +156,19 @@ class ThreadPool(SingletonMixin):
         assign_t.start()
         put_count = 0
 
-        while len(self.tasks) != 0 or not event.isSet():
+        while len(self.tasks) != 0 and not event.isSet():
             if len(self.tasks) == 0:
                 time.sleep(5)
                 continue
             c = self.tasks.pop(0)
             self.q.put(c)
             put_count += 1
+        coffeewhale.notify(msg='before q join',
+                           url='https://hooks.slack.com/services/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')
         self.q.join()
         assign_t.join()
+        coffeewhale.notify(msg='after assign_t.join()',
+                           url='https://hooks.slack.com/services/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')
 
     def is_all_released(self):
         return all(v == 1 for v in self.id_dic.values())

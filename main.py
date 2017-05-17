@@ -34,12 +34,14 @@ def check_status(f):
                 # else:
                 #     print('[%04d]     Released' % k)
             print('========================')
-        except RuntimeError:
-            pass
+        except Exception as e:
+            print('error in check_status: ', e)
         # f.flush()
         time.sleep(10)
         lock.release()
         if pool.is_all_released():
+            coffeewhale.notify(msg='pool all released: check_status done!',
+                               url='https://hooks.slack.com/services/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')
             break
 
 
@@ -96,6 +98,8 @@ def crawl(cal):
     #         print('[list] Cancelled: %s' % t.cancel())
 
     # check_t.join(15)
+    coffeewhale.notify(msg='main done',
+                       url='https://hooks.slack.com/services/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')
     print('done')
     # f.close()
     # f2.close()
