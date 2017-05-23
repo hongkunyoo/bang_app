@@ -55,6 +55,8 @@ def main():
         crawl(args.num)
     elif args.c == 'dump':
         dump()
+    elif args.c == 'size':
+        print_total_size()
     else:
         print_total_len()
 
@@ -124,6 +126,14 @@ def print_total_len():
     for i in s.get_entities():
         count += 1
     print(count)
+
+def print_total_size():
+    s = storage.Storage()
+    count = 0
+    for i in s.get_entities():
+        count += sys.getsizeof(i)
+    print(count)
+
 
 
 def dump():
