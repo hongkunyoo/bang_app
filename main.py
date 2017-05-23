@@ -119,7 +119,10 @@ def get_lats(step=1):
 
 def print_total_len():
     s = storage.Storage()
-    count = (len([i for i in s.get_entities()]))
+    #count = (len([i for i in s.get_entities()]))
+    count = 0
+    for i in s.get_entities():
+        count += 1
     print(count)
 
 

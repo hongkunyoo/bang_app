@@ -22,7 +22,7 @@ def list_entities(num=10):
 @app.route('/spot/<lat>/<lng>')
 def spot(lat, lng):
 
-    meters = 1000
+    meters = 600
     coef = meters * 0.0000089
     lat = float(lat)
     lng = float(lng)

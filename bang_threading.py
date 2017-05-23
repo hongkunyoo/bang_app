@@ -166,6 +166,9 @@ class ThreadPool(SingletonMixin):
         coffeewhale.notify(msg='before q join',
                            url='https://hooks.slack.com/services/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')
         self.q.join()
+        coffeewhale.notify(msg='tasks: %s, event.isSet(): %s, q.empty(): %s, is_all_released(): %s' % (len(self.tasks), event.isSet(), self.q.empty(),
+            self.is_all_released()),
+                           url='https://hooks.slack.com/services/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')
         assign_t.join()
         coffeewhale.notify(msg='after assign_t.join()',
                            url='https://hooks.slack.com/services/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')
