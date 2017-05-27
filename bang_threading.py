@@ -102,6 +102,7 @@ class ThreadPool(SingletonMixin):
         self.num_of_thread = num_threads
         self.id_dic = {}
         self.lock = threading.Lock()
+        self.my_event = threading.Event()
 
     def start(self, ident):
         self.lock.acquire()
@@ -139,6 +140,11 @@ class ThreadPool(SingletonMixin):
         s = threading.Semaphore(self.num_of_thread)
         pool = self.instance()
         while not (q.empty() and len(tasks) == 0 and self.is_all_released()):
+            if self.my_event.isSet():
+                coffeewhale.notify(msg='in assign_thread: q: %s, tasks: %s, is_all_released: %s' %
+                        (q.empty(), len(tasks), self.is_all_released()),
+                        url='https://hooks.slack.com/services/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')
+                break
             s.acquire()
             c = q.get()
             c.init(s, pool)
@@ -166,6 +172,7 @@ class ThreadPool(SingletonMixin):
         coffeewhale.notify(msg='before q join',
                            url='https://hooks.slack.com/services/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')
         self.q.join()
+        self.my_event.set()
         coffeewhale.notify(msg='tasks: %s, event.isSet(): %s, q.empty(): %s, is_all_released(): %s' % (len(self.tasks), event.isSet(), self.q.empty(),
             self.is_all_released()),
                            url='https://hooks.slack.com/services/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')
