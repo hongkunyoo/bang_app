@@ -145,49 +145,26 @@ def dump():
 
 # main()
 
-
 import asyncio
+import my_driver, platform
+from selenium.webdriver.common.by import By
+
+
+async def doit():
+    driver = my_driver.get_async_driver(platform.system())
+    await driver.get('https://www.naver.com/')
+    ret = await driver.find_elements(By.CSS_SELECTOR, 'div.api_pbs_inner > a')
+
+    # print(ret, type(ret), dir(ret))
+    # await ret.get_attribute('href')
+
+    for i in ret:
+        a = await i.get_attribute('href')
+        print(a)
+    driver.close()
+
 
 loop = asyncio.get_event_loop()
-
-def test1(n):
-    ll = []
-    start = time.time()
-    bs = []
-    for i in range(n):
-        b = my_driver.get_driver(platform.system())
-        l = fetch_page_pjs(loop, b, "http://google.com")
-        ll.append(l)
-        bs.append(b)
-
-    loop.run_until_complete(asyncio.gather(*ll))
-    loop.close()
-    print(time.time() - start)
-    # for b in bs:
-    #     b.close()
-
-
-def test2(n):
-    start = time.time()
-    bs = []
-    for i in range(n):
-        b = my_driver.get_driver(platform.system())
-        bs.append(b)
-
-    for b in bs:
-        b.get("http://google.com")
-        # print(b.title)
-        # print('-------------')
-
-    # for b in bs:
-    #     b.close()
-
-    print(time.time() - start)
-
-# N = 50
-# test1(N)
-# print('===============')
-# test2(N)
-print(next(get_lats(2)))
-print(next(get_lngs(2)))
+loop.run_until_complete(doit())
+loop.close()
 
