@@ -103,6 +103,7 @@ class ThreadPool(SingletonMixin):
         self.id_dic = {}
         self.lock = threading.Lock()
         self.my_event = threading.Event()
+        self.event = threading.Event()
 
     def start(self, ident):
         self.lock.acquire()
@@ -132,10 +133,11 @@ class ThreadPool(SingletonMixin):
 
         return c
 
-    def assign_thread(self, event):
+    def assign_thread(self):
         print('start assign thread')
         count = 0
         q = self.q
+        event = self.event
         tasks = self.tasks,
         s = threading.Semaphore(self.num_of_thread)
         pool = self.instance()
@@ -145,6 +147,9 @@ class ThreadPool(SingletonMixin):
                         (q.empty(), len(tasks), self.is_all_released()),
                         url='https://hooks.slack.com/services/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')
                 break
+            if q.empty() and len(tasks) == 0:
+                print('q.empty()', q.empty(), len(tasks), self.is_all_released())
+                continue
             s.acquire()
             c = q.get()
             c.init(s, pool)
@@ -157,12 +162,12 @@ class ThreadPool(SingletonMixin):
         print('end assign_thread')
 
     def join(self):
-        event = threading.Event()
-        assign_t = threading.Thread(target=self.assign_thread, args=(event, ))
+        event = self.event
+        assign_t = threading.Thread(target=self.assign_thread)
         assign_t.start()
         put_count = 0
 
-        while len(self.tasks) != 0 and not event.isSet():
+        while not (len(self.tasks) == 0 and event.isSet()):
             if len(self.tasks) == 0:
                 time.sleep(5)
                 continue
@@ -171,8 +176,8 @@ class ThreadPool(SingletonMixin):
             put_count += 1
         coffeewhale.notify(msg='before q join',
                            url='https://hooks.slack.com/services/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')
+        #self.my_event.set()
         self.q.join()
-        self.my_event.set()
         coffeewhale.notify(msg='tasks: %s, event.isSet(): %s, q.empty(): %s, is_all_released(): %s' % (len(self.tasks), event.isSet(), self.q.empty(),
             self.is_all_released()),
                            url='https://hooks.slack.com/services/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')
@@ -182,6 +187,9 @@ class ThreadPool(SingletonMixin):
 
     def is_all_released(self):
         return all(v == 1 for v in self.id_dic.values())
+
+    def get_status(self):
+        return "q.size(): %s, len(tasks): %s, is_all_released: %s, event.isSet(): %s" % (self.q.qsize(), len(self.tasks), self.is_all_released(), self.event.isSet())
 
 
 def main():

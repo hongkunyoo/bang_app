@@ -33,14 +33,16 @@ def check_status(f):
                     print('[%04d] Not released' % k)
                 # else:
                 #     print('[%04d]     Released' % k)
+            print('------------------------')
+            print(pool.get_status())
             print('========================')
         except Exception as e:
             print('error in check_status: ', e)
         # f.flush()
         time.sleep(10)
         lock.release()
-        if pool.is_all_released():
-            coffeewhale.notify(msg='pool all released: check_status done!',
+        if pool.is_all_released() and len(pool.tasks) == 0:
+            coffeewhale.notify(msg='check_status done: %s' % pool.get_status(),
                                url='https://hooks.slack.com/services/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')
             break
 
@@ -126,6 +128,7 @@ def print_total_len():
     for i in s.get_entities():
         count += 1
     print(count)
+    coffeewhale.coffeewhale.notify(count=count)
 
 def print_total_size():
     s = storage.Storage()
